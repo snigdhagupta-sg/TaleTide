@@ -3,33 +3,49 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { useAuth } from '../contexts/AuthContext';
 import './Login.css';
-import { useAuth0 } from "@auth0/auth0-react";
-
+import { jwtDecode } from 'jwt-decode';
+ // for extracting user_id from token
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const { loginWithRedirect } = useAuth0();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emailOrUsername: email, password })
+      });
 
-  try {
-    await loginWithRedirect();
-  } catch (error) {
-    console.error("Login error:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+      const data = await response.json();
 
+      if (!response.ok) {
+        alert(data.error || 'Login failed');
+        setLoading(false);
+        return;
+      }
+
+      localStorage.setItem('token', data.token); // Save JWT containing user_id
+
+      // Optionally decode and use the user_id
+      const decoded = jwtDecode(data.token);
+      console.log('Logged in user_id:', decoded.user_id);
+
+      navigate('/profile');
+    } catch (err) {
+      console.error('Login error:', err);
+      alert('Something went wrong.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="login-container">
@@ -41,13 +57,13 @@ const handleSubmit = async (e) => {
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Email or Username</Label>
             <Input
               id="email"
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+              placeholder="Enter email or username"
               required
             />
           </div>
@@ -64,11 +80,7 @@ const handleSubmit = async (e) => {
             />
           </div>
 
-          <Button 
-            type="submit" 
-            className="login-button"
-            disabled={loading}
-          >
+          <Button type="submit" className="login-button" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign In'}
           </Button>
         </form>
@@ -76,9 +88,7 @@ const handleSubmit = async (e) => {
         <div className="login-footer">
           <p>
             Don't have an account?{' '}
-            <Link to="/signup" className="signup-link">
-              Sign up here
-            </Link>
+            <Link to="/signup" className="signup-link">Sign up here</Link>
           </p>
         </div>
       </div>

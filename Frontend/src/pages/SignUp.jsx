@@ -5,13 +5,15 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { useAuth } from '../contexts/AuthContext';
 import './SignUp.css';
-
+5000
 const SignUp = () => {
   const [formData, setFormData] = useState({
+    name: '',
     username: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    phone:''
   });
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -24,34 +26,59 @@ const SignUp = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (formData.password !== formData.confirmPassword) {
+    alert('Passwords do not match!');
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const response = await fetch('http://localhost:5000/api/auth/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: formData.name,
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message || 'Signup failed');
+      setLoading(false);
       return;
     }
 
-    setLoading(true);
+    const userData = {
+      id: data.user.id,
+      username: data.user.username,
+      email: data.user.email,
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop&crop=face',
+      joinDate: new Date().toISOString().split('T')[0],
+      storiesPublished: 0,
+      storiesContributed: 0,
+      totalContributions: 0
+    };
 
-    // Simulate signup process
-    setTimeout(() => {
-      const userData = {
-        id: Math.floor(Math.random() * 1000),
-        username: formData.username,
-        email: formData.email,
-        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop&crop=face',
-        joinDate: new Date().toISOString().split('T')[0],
-        storiesPublished: 0,
-        storiesContributed: 0,
-        totalContributions: 0
-      };
-      
-      login(userData);
-      setLoading(false);
-      navigate('/');
-    }, 1000);
-  };
+    login(userData);
+    setLoading(false);
+    navigate('/');
+  } catch (error) {
+    console.error('Signup error:', error);
+    alert('Something went wrong. Please try again.');
+    setLoading(false);
+  }
+};
 
   return (
     <div className="signup-container">
@@ -62,6 +89,19 @@ const SignUp = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="signup-form">
+          <div className="form-group">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter your name"
+              required
+            />
+          </div>
+
           <div className="form-group">
             <Label htmlFor="username">Username</Label>
             <Input
@@ -110,6 +150,19 @@ const SignUp = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
               placeholder="Confirm your password"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <Label htmlFor="phone">Phone Number</Label>
+            <Input
+              id="phone"
+              name="phone"
+              type="text"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Enter your phone number"
               required
             />
           </div>

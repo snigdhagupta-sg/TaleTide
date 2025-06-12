@@ -1,8 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './StoryCard.css';
 
 const StoryCard = ({ story }) => {
+  const navigate = useNavigate();
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'ongoing': return 'var(--success)';
@@ -27,8 +29,12 @@ const StoryCard = ({ story }) => {
     return new Date(dateString).toLocaleDateString();
   };
 
+  const handleCardClick = () => {
+    navigate(`/story/${story.id}`);
+  };
+
   return (
-    <Link to={`/story/${story.id}`} className="story-card">
+    <div className="story-card" onClick={handleCardClick}>
       <div className="story-header">
         <div className="story-meta">
           <span 
@@ -54,7 +60,7 @@ const StoryCard = ({ story }) => {
           <Link 
             to={`/user/${story.author}`} 
             className="author-name"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()} // prevent card click
           >
             {story.author}
           </Link>
@@ -75,7 +81,7 @@ const StoryCard = ({ story }) => {
           <span>{formatDate(story.updatedAt)}</span>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 

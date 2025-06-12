@@ -26,7 +26,7 @@ const Home = () => {
         <section className="hero">
           <div className="hero-content">
             <h1 className="hero-title">
-              Welcome to <span className="gradient-text">StoryHub</span>
+              Welcome to <span className="gradient-text">TaleTide</span>
             </h1>
             <p className="hero-subtitle">
               Where stories come alive through collaboration. Write, contribute, and watch stories evolve together.

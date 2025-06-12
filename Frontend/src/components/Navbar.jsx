@@ -50,7 +50,7 @@ const Navbar = () => {
               </button>
             )}
             <Link to="/" className="navbar-brand">
-              <span className="gradient-text">StoryHub</span>
+              <span className="gradient-text">TaleTide</span>
             </Link>
           </div>
 
