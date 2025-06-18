@@ -5,7 +5,7 @@ const branchSchema = new mongoose.Schema({
   story_id: { type: String, required: true },
   parent_segment_id: { type: String, default: null },
   child_segment_id: { type: String, required: true },
-  likes: { type: [String], default: [] }, // store user_ids
+  likes: { type: [String], default: [], required: true},
   created_at: { type: Date, default: Date.now }
 });
 

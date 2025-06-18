@@ -5,8 +5,6 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import './Login.css';
 import { jwtDecode } from 'jwt-decode';
- // for extracting user_id from token
-
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
