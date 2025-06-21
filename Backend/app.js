@@ -7,6 +7,8 @@ const storyRoutes = require('./routes/storyRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const cookieParser = require('cookie-parser');
 const contributionRoutes = require('./routes/contributionRoutes');
+const searchRoutes = require('./routes/searchRoutes');
+const bookmarkRoutes = require('./routes/bookmarkRoutes');
 require('dns').setDefaultResultOrder('ipv4first');
 
 
@@ -23,6 +25,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/story', storyRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/contribution', contributionRoutes);
+app.use('/api/search', searchRoutes);
+app.use('/api/bookmark', bookmarkRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
